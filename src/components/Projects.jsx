@@ -44,16 +44,18 @@ const ProjectCard = ({ project }) => {
   const expired = new Date().getTime() > Number(project?.expiresAt + '000')
 
   return (
-    <div id="projects" className="rounded-lg shadow-lg bg-white w-64 m-4">
-      <Link to={'/projects/' + project.id}>
+    <div className="interactive-lift rounded-lg shadow-lg bg-white w-64 m-4 overflow-hidden">
+      <Link to={'/projects/' + project.id} className="block group">
         <img
           src={project.imageURL}
           alt={project.title}
-          className="rounded-xl h-64 w-full object-cover"
+          className="rounded-xl h-64 w-full object-cover transition duration-500 group-hover:scale-105"
         />
 
         <div className="p-4">
-          <h5>{truncate(project.title, 25, 0, 28)}</h5>
+          <h5 className="transition duration-300 group-hover:text-green-700">
+            {truncate(project.title, 25, 0, 28)}
+          </h5>
 
           <div className="flex flex-col">
             <div className="flex justify-start space-x-2 items-center mb-3">
@@ -82,7 +84,7 @@ const ProjectCard = ({ project }) => {
           </div>
 
           <div
-            className="flex justify-between items-center 
+            className="flex justify-between items-center
         font-bold mt-1 mb-2 text-gray-700"
           >
             <small>{project.raised} ETH Raised</small>
