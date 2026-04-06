@@ -2,6 +2,8 @@ import Identicons from "react-identicons";
 import { FaEthereum } from "react-icons/fa";
 import {
   daysRemaining,
+  fallbackProjectImage,
+  isProjectExpired,
   setGlobalState,
   truncate,
   useGlobalState,
@@ -10,7 +12,7 @@ import { payoutProject } from "../services/blockchain";
 
 const ProjectDetails = ({ project }) => {
   const [connectedAccount] = useGlobalState("connectedAccount");
-  const expired = new Date().getTime() > Number(project?.expiresAt + "000");
+  const expired = isProjectExpired(project?.expiresAt);
 
   return (
     <div className="pt-24 mb-5 px-6 flex justify-center">
@@ -23,6 +25,9 @@ const ProjectDetails = ({ project }) => {
             src={project?.imageURL}
             alt={project?.title}
             className="rounded-xl h-64 object-cover sm:w-1/3 w-full"
+            onError={(event) => {
+              event.currentTarget.src = fallbackProjectImage;
+            }}
           />
 
           <div className="flex-1 sm:py-0 py-4">

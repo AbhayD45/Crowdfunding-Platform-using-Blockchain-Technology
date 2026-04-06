@@ -1,6 +1,11 @@
 import abi from "../abis/src/contracts/Genesis.sol/Genesis.json";
 import address from "../abis/contractAddress.json";
-import { getGlobalState, setGlobalState } from "../store";
+import {
+  getGlobalState,
+  isProjectExpired,
+  normalizeProjectImageURL,
+  setGlobalState,
+} from "../store";
 import { ethers } from "ethers";
 
 const { ethereum } = window;
@@ -86,9 +91,9 @@ const createProject = async ({
     const contract = await getEtheriumContract();
     cost = ethers.utils.parseEther(cost);
     tx = await contract.createProject(
-      title,
-      description,
-      imageURL,
+      title.trim(),
+      description.trim(),
+      normalizeProjectImageURL(imageURL),
       cost,
       expiresAt
     );
@@ -112,9 +117,9 @@ const updateProject = async ({
     const contract = await getEtheriumContract();
     tx = await contract.updateProject(
       id,
-      title,
-      description,
-      imageURL,
+      title.trim(),
+      description.trim(),
+      normalizeProjectImageURL(imageURL),
       expiresAt
     );
     await tx.wait();
@@ -141,9 +146,12 @@ const loadProjects = async () => {
     const contract = await getEtheriumContract();
     const projects = await contract.getProjects();
     const stats = await contract.stats();
+    const activeProjects = structuredProjects(projects).filter(
+      (project) => !isProjectExpired(project.expiresAt)
+    );
 
     setGlobalState("stats", structureStats(stats));
-    setGlobalState("projects", structuredProjects(projects));
+    setGlobalState("projects", activeProjects);
   } catch (error) {
     reportError(error);
   }
@@ -230,7 +238,7 @@ const structuredProjects = (projects) =>
       timestamp: new Date(project.timestamp.toNumber()).getTime(),
       expiresAt: new Date(project.expiresAt.toNumber()).getTime(),
       date: toDate(project.expiresAt.toNumber() * 1000),
-      imageURL: project.imageURL,
+      imageURL: normalizeProjectImageURL(project.imageURL),
       raised: parseInt(project.raised._hex) / 10 ** 18,
       cost: parseInt(project.cost._hex) / 10 ** 18,
       backers: project.backers.toNumber(),

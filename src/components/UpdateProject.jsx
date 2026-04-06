@@ -2,7 +2,12 @@ import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { updateProject } from "../services/blockchain";
-import { useGlobalState, setGlobalState } from "../store";
+import {
+  fallbackProjectImage,
+  normalizeProjectImageURL,
+  useGlobalState,
+  setGlobalState,
+} from "../store";
 
 const UpdateProject = ({ project }) => {
   const [updateModal] = useGlobalState("updateModal");
@@ -22,10 +27,10 @@ const UpdateProject = ({ project }) => {
 
     const params = {
       id: project?.id,
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       expiresAt: toTimestamp(date),
-      imageURL,
+      imageURL: normalizeProjectImageURL(imageURL),
     };
 
     await updateProject(params);
@@ -62,12 +67,12 @@ const UpdateProject = ({ project }) => {
           <div className="flex justify-center items-center mt-5">
             <div className="rounded-xl overflow-hidden h-20 w-20">
               <img
-                src={
-                  imageURL ||
-                  "https://media.wired.com/photos/5926e64caf95806129f50fde/master/pass/AnkiHP.jpg"
-                }
+                src={normalizeProjectImageURL(imageURL)}
                 alt="project title"
                 className="h-full w-full object-cover cursor-pointer"
+                onError={(event) => {
+                  event.currentTarget.src = fallbackProjectImage;
+                }}
               />
             </div>
           </div>

@@ -1,7 +1,12 @@
 import Identicons from 'react-identicons'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { truncate, daysRemaining } from '../store'
+import {
+  truncate,
+  daysRemaining,
+  fallbackProjectImage,
+  isProjectExpired,
+} from '../store'
 import { FaEthereum } from 'react-icons/fa'
 
 const Projects = ({ projects }) => {
@@ -41,7 +46,7 @@ const Projects = ({ projects }) => {
 }
 
 const ProjectCard = ({ project }) => {
-  const expired = new Date().getTime() > Number(project?.expiresAt + '000')
+  const expired = isProjectExpired(project?.expiresAt)
 
   return (
     <div className="interactive-lift rounded-lg shadow-lg bg-white w-64 m-4 overflow-hidden">
@@ -50,6 +55,9 @@ const ProjectCard = ({ project }) => {
           src={project.imageURL}
           alt={project.title}
           className="rounded-xl h-64 w-full object-cover transition duration-500 group-hover:scale-105"
+          onError={(event) => {
+            event.currentTarget.src = fallbackProjectImage
+          }}
         />
 
         <div className="p-4">

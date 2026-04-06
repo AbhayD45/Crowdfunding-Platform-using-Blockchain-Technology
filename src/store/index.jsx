@@ -13,6 +13,9 @@ const { setGlobalState, useGlobalState, getGlobalState } = createGlobalState({
   backers: [],
 })
 
+const fallbackProjectImage =
+  'https://media.wired.com/photos/5926e64caf95806129f50fde/master/pass/AnkiHP.jpg'
+
 const truncate = (text, startChars, endChars, maxLength) => {
   if (text.length > maxLength) {
     let start = text.substring(0, startChars)
@@ -34,10 +37,34 @@ const daysRemaining = (days) => {
   return days == 1 ? '1 day' : days + ' days'
 }
 
+const isProjectExpired = (expiresAt) => {
+  if (!expiresAt) return false
+  return new Date().getTime() > Number(`${expiresAt}000`)
+}
+
+const normalizeProjectImageURL = (imageURL) => {
+  const trimmedURL = imageURL?.trim() || ''
+
+  if (!trimmedURL) return fallbackProjectImage
+
+  if (trimmedURL.startsWith('ipfs://')) {
+    const assetPath = trimmedURL
+      .replace('ipfs://', '')
+      .replace(/^ipfs\//, '')
+
+    return `https://ipfs.io/ipfs/${assetPath}`
+  }
+
+  return trimmedURL
+}
+
 export {
   useGlobalState,
   setGlobalState,
   getGlobalState,
   truncate,
   daysRemaining,
+  isProjectExpired,
+  normalizeProjectImageURL,
+  fallbackProjectImage,
 }

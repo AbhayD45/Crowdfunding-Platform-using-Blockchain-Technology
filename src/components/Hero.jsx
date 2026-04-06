@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { setGlobalState, useGlobalState } from "../store";
 const Hero = () => {
   const [stats] = useGlobalState("stats");
+  const [projects] = useGlobalState("projects");
 
   return (
     <div className="text-center bg-white text-gray-800 py-24 px-6">
@@ -46,7 +47,7 @@ const Hero = () => {
             className="text-lg font-bold text-green-900
             leading-5"
           >
-            {stats?.totalProjects || 0}
+            {projects.length}
           </span>
           <span>Projects</span>
         </div>
