@@ -12,7 +12,7 @@ const DeleteProject = ({ project }) => {
     await deleteProject(project?.id)
     toast.success('Project deleted successfully, will reflect in 30sec.')
     setGlobalState('deleteModal', 'scale-0')
-    navigate.push('/')
+    navigate('/')
   }
 
   return (

@@ -133,7 +133,9 @@ const deleteProject = async (id) => {
   try {
     if (!ethereum) return alert("Please install Metamask");
     const contract = await getEtheriumContract();
-    await contract.deleteProject(id);
+    tx = await contract.deleteProject(id);
+    await tx.wait();
+    await loadProjects();
   } catch (error) {
     reportError(error);
   }
@@ -147,7 +149,8 @@ const loadProjects = async () => {
     const projects = await contract.getProjects();
     const stats = await contract.stats();
     const activeProjects = structuredProjects(projects).filter(
-      (project) => !isProjectExpired(project.expiresAt)
+      (project) =>
+        !isProjectExpired(project.expiresAt) && Number(project.status) !== 3
     );
 
     setGlobalState("stats", structureStats(stats));
